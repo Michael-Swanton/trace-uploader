@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    
+    environment {
+        // Defining the paths to the Jasypt application and Java tracer
+        JASYPT_APP_PATH = "/Users/michaelsandbox/Desktop/vs_code/springboot-jasypt-encrypt-demo-master_copy/target/springboot-jasypt-encrypt-demo-0.0.1-SNAPSHOT.jar"
+        JAVA_TRACER_PATH = "/Users/michaelsandbox/Desktop/vs_code/cs-java-tracer-2.0.3/cs-java-tracer.jar"
+    }
+    
+    stages {
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    // Checking if the Jasypt application and Java tracer exist at the specified locations
+                    if (!fileExists(env.JASYPT_APP_PATH) || !fileExists(env.JAVA_TRACER_PATH)) {
+                        error "Required files not found. Please make sure the Jasypt application and Java tracer are present at the specified locations."
+                    }
+                }
+            }
+        }
+        
+        stage('Run Application with Java Tracer') {
+            steps {
+                script {
+                    // Running the Jasypt application with the Java tracer
+                    sh "java -javaagent:${env.JAVA_TRACER_PATH} -jar ${env.JASYPT_APP_PATH}"
+                }
+            }
+        }
+    }
+}
